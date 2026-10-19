@@ -33,7 +33,7 @@ Install the Python binding as `amplifier-agent[github-copilot]` unless the user 
 otherwise; do not ask them whether to include the extra.
 
 ```
-Python      Python 3.12+, uv add from a release tag      docs/python/{quickstart,names,reference}.md
+Python      Python 3.12-3.14, uv add from a release tag  docs/python/{quickstart,names,reference}.md
 TypeScript  Node 22, Linux x86-64, glibc 2.35+, ESM;      docs/typescript/{quickstart,names,reference}.md
             npm install amplifier-agent-ts
 HTTP        chat-completions server amplifier-agent-face  docs/http/{quickstart,reference,limits}.md
@@ -149,7 +149,7 @@ Optional, for diagnosing behavior. Keep application code on the public surface; 
 internals and upstream module APIs are not the public interface. There is no `amplifier-agent` CLI.
 
 ```bash
-git clone --depth 1 --single-branch --branch v0.23.0 \
+git clone --depth 1 --single-branch --branch v0.23.1 \
   https://github.com/microsoft/amplifier-agent.git "$(mktemp -d)/amplifier-agent"
 ```
 
