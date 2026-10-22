@@ -2,6 +2,29 @@
 
 ## Unreleased
 
+### Changed
+
+- With no `provider` configured, the agent uses the first provider with credentials, in the order openai, anthropic,
+  gemini, openai-chatgpt, github-copilot, and that provider's default model. With no `model` configured, the model is
+  the provider's default. An environment with an Anthropic key and no OpenAI key resolves as before. See
+  [configuration](docs/configuration.md).
+
+### Added
+
+- HTTP turns: `POST /v1/amplifier/turns` streams every turn event, `"approvals": "ask"` puts each allowed effect to
+  the caller through `POST /v1/amplifier/approvals/{request_id}`, and tool results carry the files they changed. See
+  [HTTP turns](docs/http/turns.md).
+- HTTP face: select `<provider>/<model>` and `reasoning_effort` per request. `/v1/models` lists every selectable
+  model with its limits and reasoning efforts. See [HTTP reference](docs/http/reference.md#request).
+- HTTP face: stream reasoning as `reasoning_content`, and report cache writes as
+  `prompt_tokens_details.cache_write_tokens`.
+- HTTP face: an `Amplifier-Session-Id` header keeps a durable session on the server and continues it from the last user
+  message. See [sessions](docs/http/reference.md#sessions).
+- A `context_size` [progress](docs/concepts/events.md) event after each primary model request reports the request's
+  input tokens and the context budget. The HTTP face carries the last one in `usage` as
+  `com.microsoft.amplifier.context`.
+- HTTP face: accept `reasoning_content` on assistant messages, so a client can send back what the face returned.
+
 ## 0.23.1 (2026-10-19)
 
 ### Changed

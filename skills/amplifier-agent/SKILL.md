@@ -36,14 +36,17 @@ otherwise; do not ask them whether to include the extra.
 Python      Python 3.12-3.14, uv add from a release tag  docs/python/{quickstart,names,reference}.md
 TypeScript  Node 22, Linux x86-64, glibc 2.35+, ESM;      docs/typescript/{quickstart,names,reference}.md
             npm install amplifier-agent-ts
-HTTP        chat-completions server amplifier-agent-face  docs/http/{quickstart,reference,limits}.md
+HTTP        chat-completions server amplifier-agent-face  docs/http/{quickstart,reference,turns,limits}.md
 ```
 
 - TypeScript options are camelCase; received records keep snake_case spelling
   (`session_id`, `call_id`), except `ImagePart.mediaType`. Counters are `bigint`,
   costs are decimal strings.
-- HTTP carries less than a binding: no interactive approvals, caller tools, durable
-  sessions, or full event stream. Its tools run under a static policy from
+- HTTP carries less than a binding: no caller tools. Chat completions carries reply text
+  and reasoning only; `/v1/amplifier/turns` streams every event and, with
+  `"approvals": "ask"`, takes approvals over HTTP. Requests may pick `<provider>/<model>`
+  and `reasoning_effort`, and an `Amplifier-Session-Id` header keeps a durable session on
+  the server. Its tools run under a static policy from
   `AMPLIFIER_AGENT_APPROVALS`, `"approvals"` in the config file, or `create_app`
   options; with tools and no policy the server refuses to start. All clients share the
   server's tools, filesystem, and credentials. Each response carries one `usage` summed
@@ -61,7 +64,8 @@ HTTP        chat-completions server amplifier-agent-face  docs/http/{quickstart,
    credentials. See
    [configuration](https://github.com/microsoft/amplifier-agent/blob/main/docs/configuration.md)
    and [models](https://github.com/microsoft/amplifier-agent/blob/main/docs/concepts/models.md).
-   Set both provider and model when switching providers. An unavailable model is
+   With no provider configured, the first provider with credentials is used, with its
+   default model. Set both provider and model to choose one. An unavailable model is
    reported by the first turn, not at construction. For a provider or model picker,
    call `list_providers` / `listProviders` and `list_models` / `listModels`; they need
    no agent. See
@@ -69,7 +73,7 @@ HTTP        chat-completions server amplifier-agent-face  docs/http/{quickstart,
    `reasoning_effort` (`reasoningEffort` in TypeScript) sets reasoning from `none` to
    `max`, default `"medium"`. Session and turn values replace it, even when higher. A
    `list_models` record's `reasoning_efforts` lists the values its model accepts. The HTTP face
-   reads `AMPLIFIER_AGENT_REASONING_EFFORT` at start. Never set effort in
+   reads `AMPLIFIER_AGENT_REASONING_EFFORT` at start and `reasoning_effort` per request. Never set effort in
    `extra_request_params`; it is refused.
 2. Sessions are [durable by default](https://github.com/microsoft/amplifier-agent/blob/main/docs/concepts/sessions.md).
    To resume, keep the session ID and sessions directory, and rebuild tools and
